@@ -26,4 +26,8 @@ The environment is represented by [this](https://github.com/openai/gym/wiki/Moun
 
 <img src="/mountain_car/tex/369b5740ca697980748f81c4e5ad0294.svg?invert_in_darkmode&sanitize=true" align=middle width=266.11139445pt height=67.39786349999999pt/>
 
+## Project Layout
 
+* `Model`: holds the TensorFlow operations and model definitions
+* `Memory`: where memory of the actions, rewards and states are stored and retrieved from
+* `GameRunner`: main training and agent control class
