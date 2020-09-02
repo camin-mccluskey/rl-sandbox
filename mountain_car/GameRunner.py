@@ -2,12 +2,14 @@ from mountain_car.Model import Model
 from mountain_car.Memory import Memory
 from mountain_car.config import config
 
-import numpy as np
-import tensorflow as tf
-import matplotlib.pyplot as plt
 import random
 import math
 import gym
+
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 
 
 class GameRunner:
@@ -71,22 +73,22 @@ class GameRunner:
 
     def _choose_action(self, state):
         if random.random() < self._eps:
-            return random.randint(0, self._model.num_actions - 1)
+            return random.randint(0, self._model._num_actions - 1)
         else:
             return np.argmax(self._model.predict_one(state, self._sess))
 
     def _replay(self):
-        batch = self._memory.sample(self._model.batch_size)
+        batch = self._memory.sample(self._model._batch_size)
         states = np.array([val[0] for val in batch])
-        next_states = np.array([(np.zeros(self._model.num_states)
+        next_states = np.array([(np.zeros(self._model._num_states)
                                  if val[3] is None else val[3]) for val in batch])
         # predict Q(s,a) given the batch of states
         q_s_a = self._model.predict_batch(states, self._sess)
         # predict Q(s',a') - so that we can do gamma * max(Q(s'a')) below
         q_s_a_d = self._model.predict_batch(next_states, self._sess)
         # setup training arrays
-        x = np.zeros((len(batch), self._model.num_states))
-        y = np.zeros((len(batch), self._model.num_actions))
+        x = np.zeros((len(batch), self._model._num_states))
+        y = np.zeros((len(batch), self._model._num_actions))
         for i, b in enumerate(batch):
             state, action, reward, next_state = b[0], b[1], b[2], b[3]
             # get the current q values for all actions in state
@@ -115,7 +117,7 @@ if __name__ == "__main__":
     model = Model(num_states, num_actions, config['BATCH_SIZE'])
     mem = Memory(50000)
 
-    with tf.Session() as sess:
+    with tf.compat.v1.Session() as sess:
         sess.run(model._var_init)
         gr = GameRunner(sess, model, env, mem, config['MAX_EPSILON'], config['MIN_EPSILON'],
                         config['LAMBDA'], config['GAMMA'])
