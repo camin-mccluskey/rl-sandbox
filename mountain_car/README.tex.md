@@ -29,7 +29,7 @@ r =
 \left\{
 	\begin{array}{ll}
 		r += 10 & \mbox{if } Position > 0.1 \\
-		r += 20 & \mbox{if } Position > 0.25 \|
+		r += 20 & \mbox{if } Position > 0.25 \\
 		r += 100 & \mbox{if } Position > 0.5
 	\end{array}
 \right.
