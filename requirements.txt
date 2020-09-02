@@ -1,2 +1,6 @@
 tensorflow
+matplotlib
+gym
+
+# dev requirements
 flake8

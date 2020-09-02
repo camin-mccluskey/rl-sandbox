@@ -35,4 +35,8 @@ r =
 \right.
 $
 
+## Project Layout
 
+* `Model`: holds the TensorFlow operations and model definitions
+* `Memory`: where memory of the actions, rewards and states are stored and retrieved from
+* `GameRunner`: main training and agent control class
