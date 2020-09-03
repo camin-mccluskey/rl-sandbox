@@ -38,15 +38,23 @@ class GameRunner:
 
             action = self._choose_action(state)
             next_state, reward, done, info = self._env.step(action)
-            if next_state[0] >= 0.1:
-                reward += 10
-            elif next_state[0] >= 0.25:
-                reward += 20
-            elif next_state[0] >= 0.5:
+            if next_state[0] >= -0.25:
                 reward += 100
+            elif next_state[0] >= 0.25:
+                reward += 200
+            elif next_state[0] >= 0.6:
+                reward += 1000
 
+            # reward = next_state position value (linear reward)
+            # reward = next_state[0]
+
+            # no penalty for moving backwards
+            # reward = max(0, next_state[0])
+
+            # to record best achieved position
             if next_state[0] > max_x:
                 max_x = next_state[0]
+
             # is the game complete? If so, set the next state to
             # None for storage sake
             if done:
@@ -55,7 +63,7 @@ class GameRunner:
             self._memory.add_sample((state, action, reward, next_state))
             self._replay()
 
-            # exponentially decay the eps value
+            # exponentially decay the epsilon value
             self._steps += 1
             self._eps = self._min_eps + (self._max_eps - self._min_eps) * math.exp(-self._decay * self._steps)
 
@@ -121,7 +129,7 @@ if __name__ == "__main__":
         sess.run(model._var_init)
         gr = GameRunner(sess, model, env, mem, config['MAX_EPSILON'], config['MIN_EPSILON'],
                         config['LAMBDA'], config['GAMMA'])
-        num_episodes = 300
+        num_episodes = 500
         cnt = 0
         while cnt < num_episodes:
             if cnt % 10 == 0:
