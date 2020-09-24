@@ -83,7 +83,7 @@ class CatchEnv(Env):
         ball_position_x = self.v_0 * cos(self.theta) * self.step_count * 0.01
         ball_position_y = (self.v_0 * sin(self.theta) * self.step_count * 0.01) - (0.5 * self.gravity * (self.step_count * 0.01)**2)
 
-        ball_position_x = np.clip(ball_position_x, self.min_x, self.max_x)
+        # ball_position_x = np.clip(ball_position_x, self.min_x, self.max_x)
         ball_position_y = np.clip(ball_position_y, self.min_y, self.max_y)
 
         ball_velocity = sqrt(ball_position_x**2 + ball_position_y**2) * 1 / self.step_count
@@ -98,8 +98,9 @@ class CatchEnv(Env):
 
     def reset(self):
         # state: (ball_position, ball_velocity, agent_position)
+        self.step_count = 0
 
-        # initialise agent x position with velocity 0
+        # initialise agent x position
         agent_position = self.np_random.uniform(low=5, high=10)
 
         # initialise ball position
@@ -130,7 +131,6 @@ class CatchEnv(Env):
         if self.viewer is None:
             from gym.envs.classic_control import rendering
             self.viewer = rendering.Viewer(screen_width, screen_height)
-            # car.add_attr(rendering.Transform(translation=(0, clearance)))
 
             ball = rendering.make_circle(3)
             ball.set_color(.5, .5, .5)
@@ -155,7 +155,6 @@ class CatchEnv(Env):
             newy=ball_pos[1] * scale_x
         )
 
-
         agent_pos = self.state[2]
         self.agentTrans.set_translation(
             newx=agent_pos * scale_x,
@@ -164,18 +163,28 @@ class CatchEnv(Env):
 
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
 
+    def close(self):
+        if self.viewer:
+            self.viewer.close()
+            self.viewer = None
+
 
 if __name__ == '__main__':
     env = CatchEnv()
-    state = env.reset()
     tot_reward = 0
     max_x = -100
-    while True:
-        env.render()
-        # always stay still
-        next_state, reward, done, info = env.step(1)
-        print("Next State: {}".format(next_state))
-        print("Reward: {}".format(reward))
-        print("Done?: {}".format(done))
-        if done:
-            break
+    for i in range(50):
+        state = env.reset()
+        cnt = 0
+        while True:
+            cnt += 1
+            env.render()
+            # always stay still
+            next_state, reward, done, info = env.step(1)
+            print("Next State: {}".format(next_state))
+            # print("Reward: {}".format(reward))
+            # print("Done?: {}".format(done))
+            if done:
+                print("----------------Looped for: {}-------------------".format(cnt))
+                break
+    env.close()
