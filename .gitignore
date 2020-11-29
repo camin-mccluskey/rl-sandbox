@@ -1,4 +1,4 @@
 .idea
 __pycache__
 
-mountain_car/__pycache__
+*.pyc
